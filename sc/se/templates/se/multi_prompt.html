@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>Create Multiple Prompts</title>
+  </head>
+  <body style="text-align:center;">
+    <h1>Enter your prompts below</h1>
+    <form name="multi-prompt" id="multi-prompt" action="{% url 'respond_multi' %}" method="POST">
+      {% csrf_token %}
+      <textarea name="prompts" id="prompts" style="width:60%; height:45%;"></textarea><br><br>
+      <input type="submit">
+    </form>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(e) {
+      // When the page first loads - move focus to the textarea
+      $('#prompts').focus();
+
+      // Submit the form when typing enter
+      // (Responses shouldn't be multi-line anyway)
+      $('#prompts').keypress(function(e) {
+        if (e.ctrlKey && e.keyCode == 13) {
+          $('form#multi-prompt').submit();
+          return false;
+        }
+      });
+    });
+  </script>
+</html>

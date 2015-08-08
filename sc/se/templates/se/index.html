@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>Subconscious Stuff!</title>
+  </head>
+  <body style="text-align:center;">
+    <h1 id="prompt">{{ prompt.content }}</h1>
+    <form name="write-response" id="write-response" action="{% url 'write_response' %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="prompt_id" id="prompt-id" value="{{ prompt.id }}">
+      <textarea name="response_content" id="response-content" style="width:60%; height:45%;"></textarea><br><br>
+      <input type="submit">
+    </form>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(e) {
+      // When the page first loads - move focus to the textarea
+      $('#response-body').focus();
+
+      // Submit the form when typing enter
+      // (Responses shouldn't be multi-line anyway)
+      $('#response-body').keypress(function(e) {
+        if (e.which == 13) {
+          $('form#write-response').submit();
+          return false;
+        }
+      });
+
+      $('form#write-response').on('submit', function(e) {
+        e.preventDefault();
+
+        var $id      = $('#prompt-id');
+        var $content = $('#response-content');
+        var $prompt  = $('#prompt');
+
+        var id = $id.val();
+        var content = $content.val();
+
+        $.ajax({
+          url: {% url 'write_response' %},
+          method: 'POST',
+          dataType: 'json',
+          data: {
+            'prompt_id': id,
+            'response_content': content
+          }
+        }).done(function(r) {
+          if (r.success) {
+            $id.val(r.prompt_id);
+            $prompt.html(r.prompt_content);
+            $content.val('');
+          }
+        });
+      });
+    });
+  </script>
+</html>
